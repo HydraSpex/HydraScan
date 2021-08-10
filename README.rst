@@ -10,9 +10,9 @@ Installation
 
 The preferred way to install is from source with ``python setup.py install``. You will need to have `setuptools`_ installed::
 
-    git clone https://github.com/HydraSpex/HydraScan
-    cd HydraScan
-    python setup.py install
+	git clone https://github.com/HydraSpex/HydraScan
+	cd HydraScan
+	python setup.py install
  
 .. _setuptools: https://pypi.python.org/pypi/setuptools
 
