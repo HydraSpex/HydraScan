@@ -20,6 +20,7 @@ need to have `setuptools`_ installed::
 
 	
 Running Locally Via Github (no install)
+
 You can run this project locally by following these steps::
 
 	Clone/download the repo
