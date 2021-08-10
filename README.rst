@@ -18,14 +18,12 @@ The preferred way to install is from source with ``python setup.py install``. Yo
 
 
 	
-Running Locally Via [Github](https://github.com/HydraSpex/HydraScan) (no install). You can run this project locally by following these steps::
+Running Locally Via Github (https://github.com/HydraSpex/HydraScan) (no install). You can run this project locally by following these steps::
 
-	Clone/download the `repo`_ 
+	Clone/download the repository https://github.com/HydraSpex/HydraScan
 	Open cmd/terminal and cd into the project
 	Execute python -m pip install -r requirements.txt
  
-.. _repo: https://github.com/HydraSpex/HydraScan
-
 Now to run the application, execute ``python HydraScan.py``.
 
 
