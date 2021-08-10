@@ -20,7 +20,7 @@ need to have `setuptools`_ installed::
 
 
 	
-Running Locally Via [Github](https://github.com/HydraSpex/HydraScan) (no install)
+Running Locally Via [Github](https://github.com/HydraSpex/HydraScan) (no install).
 You can run this project locally by following these steps::
 
 	Clone/download the [repo](https://github.com/HydraSpex/HydraScan)
