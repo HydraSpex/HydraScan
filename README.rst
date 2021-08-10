@@ -25,8 +25,8 @@ You can run this project locally by following these steps::
 	Clone/download the repo
 	Open cmd/terminal and cd into the project
 	Execute python -m pip install -r requirements.txt
-
-Now to run the application, execute python -m auto_py_to_exe.
+	
+Now to run the application, execute ``python HydraScan.py``.
 
 
 Usage
