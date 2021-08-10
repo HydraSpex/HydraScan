@@ -19,13 +19,14 @@ need to have `setuptools`_ installed::
 .. _setuptools: https://pypi.python.org/pypi/setuptools
 
 
-Running Locally Via [Github](https://github.com/brentvollebregt/auto-py-to-exe) (no install)
+	
+Running Locally Via [Github](https://github.com/HydraSpex/HydraScan) (no install)
 You can run this project locally by following these steps::
 
-	Clone/download the repo
+	Clone/download the [repo](https://github.com/HydraSpex/HydraScan)
 	Open cmd/terminal and cd into the project
 	Execute python -m pip install -r requirements.txt
-	
+
 Now to run the application, execute ``python HydraScan.py``.
 
 
