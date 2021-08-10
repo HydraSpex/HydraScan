@@ -15,8 +15,18 @@ need to have `setuptools`_ installed::
     git clone https://github.com/HydraSpex/HydraScan
     cd HydraScan
     python setup.py install
-
+ 
 .. _setuptools: https://pypi.python.org/pypi/setuptools
+
+	
+Running Locally Via Github (no install)
+You can run this project locally by following these steps:
+
+	Clone/download the repo
+	Open cmd/terminal and cd into the project
+	Execute python -m pip install -r requirements.txt
+
+Now to run the application, execute python -m auto_py_to_exe.
 
 
 Usage
@@ -29,5 +39,5 @@ Todo
 ====
 
 The next things on the list:
-- faster scanning
-- better resolution
+	- faster scanning
+	- better resolution
