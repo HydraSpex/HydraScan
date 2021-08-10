@@ -18,9 +18,8 @@ need to have `setuptools`_ installed::
  
 .. _setuptools: https://pypi.python.org/pypi/setuptools
 
-	
-Running Locally Via Github (no install)
 
+Running Locally Via [Github](https://github.com/brentvollebregt/auto-py-to-exe) (no install)
 You can run this project locally by following these steps::
 
 	Clone/download the repo
