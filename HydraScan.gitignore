@@ -1,1 +1,8 @@
-.env
+# Ignoriere alle Log-Dateien
+*.log
+
+# Ignoriere alle Env-Dateien
+*.env
+
+# Ignoriere alle Datenbanken
+*.db
