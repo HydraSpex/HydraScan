@@ -1,4 +1,4 @@
-#HydraScan 1.45.2 - Gaia
+#HydraScan 1.45.3 - Gaia
 
 """
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -8,10 +8,10 @@
 
 
 #Info ---------------------------------------------------------------
-Version = "1.45.2"
+Version = "1.45.3"
 VersionName = "Gaia"
 print("Version: HydraScan " + str(Version) + " - " + str(VersionName))
-Updates = "Auto Update\n\tLive Plot APD\n\tInvert XY\n\tSymPhoTime\n\tCode cleaning\n\tminor fixes"
+Updates = "Auto Update\n\tLive Plot APD\n\tLogger\n\tSymPhoTime\n\tCode cleaning\n\tminor fixes"
 NumberUpdates = 6
 print("Updates: " + Updates)
 Copyright = "Property of HydraSpex UG"
@@ -131,8 +131,8 @@ BACKUP_DIR = "HydraScan_old"
 
 # DATEIEN, DIE ERHALTEN BLEIBEN MÜSSEN
 # Hier trägst du deine Datenbanken oder Config-Dateien ein
-KEEP_FILES = ["settings.db", "user_prefs.json", "database.sqlite"]
-KEEP_EXTENSIONS = [".db", ".sqlite"]
+KEEP_FILES = ["settingsFile.db", "settingsScanDev.db", "settingsScanMeasure.db", "settingsScanSlope.db", "settingsScanStack.db", "settingsScanSync.db", "settingsScanTTL.db"]
+KEEP_EXTENSIONS = [".db", ".sqlite", ".env"]
 
 #Auto-Updater
 def update_full_repo():
@@ -145,7 +145,8 @@ def update_full_repo():
                 if response.status_code == 200:
                         latest_release = response.json()
                         latest_version = latest_release['tag_name'].replace("v", "")
-                        #print(f"Version im Repo v{latest_version}")
+                        print(f"Version v{__version__}")
+                        print(f"Version im Repo v{latest_version}")
                         
                         if latest_version > __version__:
                                 print(f"New Version v{latest_version} found!")
@@ -156,22 +157,28 @@ def update_full_repo():
                                 zip_response = requests.get(zip_url, timeout=30)
                                 
                                 if zip_response.status_code == 200:
-                                        if os.path.exists(BACKUP_DIR):
-                                                shutil.rmtree(BACKUP_DIR)
+                                        #if os.path.exists(BACKUP_DIR):
+                                        #        shutil.rmtree(BACKUP_DIR)
                                 
-                                        os.makedirs(BACKUP_DIR)
+                                        try:
+                                                os.makedirs(BACKUP_DIR)
+                                        except:
+                                                pass
                                         
                                         current_files = os.listdir('.')
                                         for item in current_files:
-                                                # Überspringe den Backup-Ordner und das Update-Skript selbst
-                                                if item in [BACKUP_DIR, ".git", ".env"]:
+                                                # Überspringe den Backup-Ordner und Cache-Files
+                                                if item in [BACKUP_DIR, ".git", "__pycache__"]:
+                                                        continue
+
+                                                if "Backup_" in item: 
                                                         continue
 
                                                 # PRÜFUNG: Ist es eine schützenswerte Datei?
                                                 ext = os.path.splitext(item)[1]
-                                                if item in KEEP_FILES or ext in KEEP_EXTENSIONS:
-                                                        print(f"Behalte lokale Daten: {item}")
-                                                        # Diese Datei bleibt einfach im Hauptordner liegen!
+                                                if item in KEEP_FILES or ext in KEEP_EXTENSIONS or item in ["Files"]:
+                                                        print(f"Copying local Data: {item}")
+                                                        shutil.copy(item, os.path.join(BACKUP_DIR, item))
                                                         continue
 
                                                 shutil.move(item, os.path.join(BACKUP_DIR, item))
@@ -180,19 +187,24 @@ def update_full_repo():
 
                                         with zipfile.ZipFile(io.BytesIO(zip_response.content)) as z:
                                                 top_dir = z.namelist()[0].split('/')[0]
-                                                z.extractall()
                                                 
+                                                z.extractall()
+                                                #print(top_dir)
                                                 extracted_dir = top_dir
                                                 for file_name in os.listdir(extracted_dir):
                                                         source = os.path.join(extracted_dir, file_name)
+                                                        print(source)
                                                 
                                                         # VORSICHT: Falls das ZIP eine leere Standard-DB enthält, 
                                                         # darf diese die User-DB nicht überschreiben!
                                                         if os.path.exists(file_name) and (file_name in KEEP_FILES or os.path.splitext(file_name)[1] in KEEP_EXTENSIONS):
-                                                                print(f"Überspringe Überschreiben von User-Daten: {file_name}")
+                                                                print(f"Skipping User-Data: {file_name}")
                                                                 continue
                                                         
-                                                shutil.move(source, file_name)
+                                                        shutil.copy(source, file_name)
+                                        
+                                        Backup_New = "Backup_" + latest_version
+                                        os.rename(top_dir, Backup_New)
 
                                         print("Installing new Software...")
                                         try:    
@@ -202,11 +214,11 @@ def update_full_repo():
                                         print("Installation done.")
 
                                         print("Update finished. Restart the Software to use the newest Version.\n\n")
-                                        sys.exit()
+                                        #sys.exit()
                                 else:
                                         print("Download failed.")
                         else:
-                                print("Current Version ist the newest Version.\n\n")
+                                print("Current Version is the newest Version.\n\n")
                 else:
                         print("API-Error at Release-Info request.")
                 
@@ -240,16 +252,26 @@ import logging
 LOG_FILE = "error.log"
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.DEBUG, # Speichert alles ab 'DEBUG' aufwärts
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding='utf-8'), # In Datei schreiben
-        logging.StreamHandler(sys.stdout)               # Auch in der Konsole anzeigen
-    ]
-)
-
+# 1. Den Haupt-Logger erstellen
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG) # Der Logger selbst muss auf das niedrigste Level hören
+
+# 2. File-Handler: Schreibt ALLES (DEBUG und höher) in die Datei
+file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
+file_handler.setLevel(logging.DEBUG)
+file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+file_handler.setFormatter(file_formatter)
+
+# 3. Stream-Handler (Konsole): Zeigt nur WARNING oder höher
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.WARNING) # <-- HIER einstellen (INFO, WARNING oder ERROR)
+console_formatter = logging.Formatter('[%(levelname)s] %(message)s')
+console_handler.setFormatter(console_formatter)
+
+# 4. Handler zum Logger hinzufügen
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
 
 
 
@@ -11540,13 +11562,13 @@ class Measurement(QThread):
                 global TTLOUT6
                 global TTLOUT_Wires
 
+
                 print("Integrationtime: " + str(integrationtime))
 
                 PiezoX = PiezoDistanceX * (DeviceVoltage/PiezoVoltage)
                 PiezoY = PiezoDistanceY * (DeviceVoltage/PiezoVoltage)
 
                 print("Fred beginnt")
-
                 #Establishing TTL
                 self.OneWire = TTLOUT_Wires[0]
                 if QuelleTTL == 0:
@@ -11882,6 +11904,9 @@ class Measurement(QThread):
                 global TTLOUT7
                 global TTLOUT8
                 global ShutterMode
+
+                
+                #pint(Crashtest)
 
                 self.zNew = zNew
                 self.t = t
@@ -12972,7 +12997,7 @@ def main():
         """
         
 if __name__ == '__main__':
-        update_full_repo()
+        #update_full_repo()
         main()                                                                                                                                          #Programm endet wenn Fenster endet
 """
 except KeyboardInterrupt:
