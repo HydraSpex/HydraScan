@@ -36,6 +36,7 @@ class MCP4725_61(object):
         # gespeichert und steht nach einem Reset am Ausgang an.
 
         # value auf einem positiven 12-Bit-Wert begrenzen.
+        #print(value)
         value = value & 0xFFF
         # Register-Bytes erzeugen und senden.
         # Siehe Datenblatt figure 6-2:
